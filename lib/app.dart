@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'core/theme/app_theme.dart';
+import 'data/repositories/employee_repository.dart';
 import 'providers/auth_provider.dart';
+import 'providers/employee_provider.dart';
 import 'screens/login/login_screen.dart';
 
 /// Root widget of Rivermouth Scheduler.
@@ -11,8 +13,13 @@ class RivermouthApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(
+          create: (_) => EmployeeProvider(EmployeeRepository()),
+        ),
+      ],
       child: MaterialApp(
         title: 'Rivermouth Scheduler',
         debugShowCheckedModeBanner: false,
