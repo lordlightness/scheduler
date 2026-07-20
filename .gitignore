@@ -1,0 +1,26 @@
+*.iml
+*.class
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+
+# Platform folders will be generated locally via `flutter create .`
+/android/
+/ios/
+/web/
+/linux/
+/macos/
+/windows/
+
+# IDE
+.idea/
+.vscode/
+
+# Hive local databases (dev only)
+*.hive
+*.lock
