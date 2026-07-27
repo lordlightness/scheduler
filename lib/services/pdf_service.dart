@@ -5,18 +5,19 @@ import 'package:intl/intl.dart';
 import '../core/constants/shift_type.dart';
 import '../data/models/employee.dart';
 
-/// Builds a printable PDF of the monthly schedule.
+/// Builds a printable PDF of the weekly schedule.
 class PdfService {
   PdfService._();
 
-  static Future<pw.Document> buildMonthlySchedule({
-    required DateTime month,
+  static Future<pw.Document> buildWeeklySchedule({
+    required List<DateTime> weekDates,
     required List<Employee> employees,
     required ShiftType Function(String employeeId, DateTime date) shiftFor,
   }) async {
     final doc = pw.Document();
-    final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
-    final monthLabel = DateFormat.yMMMM().format(month);
+    final weekLabel =
+        '${DateFormat.MMMd().format(weekDates.first)} - '
+        '${DateFormat.MMMd().format(weekDates.last)}';
 
     doc.addPage(
       pw.Page(
@@ -26,16 +27,16 @@ class PdfService {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
-                'Rivermouth Beach Bar — Schedule ($monthLabel)',
+                'Rivermouth Beach Bar — Schedule ($weekLabel)',
                 style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 12),
               pw.Table(
                 border: pw.TableBorder.all(width: 0.5),
                 children: [
-                  _buildHeaderRow(daysInMonth),
+                  _buildHeaderRow(weekDates),
                   for (final employee in employees)
-                    _buildEmployeeRow(employee, month, daysInMonth, shiftFor),
+                    _buildEmployeeRow(employee, weekDates, shiftFor),
                 ],
               ),
             ],
@@ -47,17 +48,22 @@ class PdfService {
     return doc;
   }
 
-  static pw.TableRow _buildHeaderRow(int daysInMonth) {
+  static pw.TableRow _buildHeaderRow(List<DateTime> weekDates) {
     return pw.TableRow(
       children: [
         pw.Padding(
           padding: const pw.EdgeInsets.all(4),
           child: pw.Text('Employee', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
         ),
-        for (int day = 1; day <= daysInMonth; day++)
+        for (final date in weekDates)
           pw.Padding(
             padding: const pw.EdgeInsets.all(2),
-            child: pw.Center(child: pw.Text('$day', style: const pw.TextStyle(fontSize: 8))),
+            child: pw.Center(
+              child: pw.Text(
+                '${DateFormat.E().format(date)} ${date.day}',
+                style: const pw.TextStyle(fontSize: 8),
+              ),
+            ),
           ),
       ],
     );
@@ -65,8 +71,7 @@ class PdfService {
 
   static pw.TableRow _buildEmployeeRow(
     Employee employee,
-    DateTime month,
-    int daysInMonth,
+    List<DateTime> weekDates,
     ShiftType Function(String employeeId, DateTime date) shiftFor,
   ) {
     return pw.TableRow(
@@ -75,12 +80,12 @@ class PdfService {
           padding: const pw.EdgeInsets.all(4),
           child: pw.Text(employee.name, style: const pw.TextStyle(fontSize: 9)),
         ),
-        for (int day = 1; day <= daysInMonth; day++)
+        for (final date in weekDates)
           pw.Padding(
             padding: const pw.EdgeInsets.all(2),
             child: pw.Center(
               child: pw.Text(
-                shiftFor(employee.id, DateTime(month.year, month.month, day)).label,
+                shiftFor(employee.id, date).label,
                 style: const pw.TextStyle(fontSize: 8),
               ),
             ),
