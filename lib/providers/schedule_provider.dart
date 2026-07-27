@@ -7,37 +7,48 @@ import '../data/repositories/schedule_repository.dart';
 
 class ScheduleProvider extends ChangeNotifier {
   ScheduleProvider(this._repository) {
-    _loadMonth(_visibleMonth);
+    _loadWeek(_visibleWeekStart);
   }
 
   final ScheduleRepository _repository;
 
-  DateTime _visibleMonth = DateTime(DateTime.now().year, DateTime.now().month);
+  DateTime _visibleWeekStart = _startOfWeek(DateTime.now());
   List<ScheduleEntry> _entries = [];
   Map<String, ScheduleEntry> _entriesByKey = {};
 
-  DateTime get visibleMonth => _visibleMonth;
+  /// Monday of the currently visible week.
+  DateTime get visibleWeekStart => _visibleWeekStart;
+
+  /// The 7 dates (Mon–Sun) making up the visible week.
+  List<DateTime> get weekDates =>
+      List.generate(7, (i) => _visibleWeekStart.add(Duration(days: i)));
+
   List<ScheduleEntry> get entries => List.unmodifiable(_entries);
+
+  static DateTime _startOfWeek(DateTime date) {
+    final normalized = DateTime(date.year, date.month, date.day);
+    return normalized.subtract(Duration(days: normalized.weekday - 1));
+  }
 
   String _keyFor(String employeeId, DateTime date) =>
       '${employeeId}_${date.year}-${date.month}-${date.day}';
 
-  void _loadMonth(DateTime month) {
-    _entries = _repository.getForMonth(month.year, month.month);
+  void _loadWeek(DateTime weekStart) {
+    _entries = _repository.getForWeek(weekStart);
     _entriesByKey = {
       for (final entry in _entries) _keyFor(entry.employeeId, entry.date): entry,
     };
   }
 
-  void goToNextMonth() {
-    _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + 1);
-    _loadMonth(_visibleMonth);
+  void goToNextWeek() {
+    _visibleWeekStart = _visibleWeekStart.add(const Duration(days: 7));
+    _loadWeek(_visibleWeekStart);
     notifyListeners();
   }
 
-  void goToPreviousMonth() {
-    _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month - 1);
-    _loadMonth(_visibleMonth);
+  void goToPreviousWeek() {
+    _visibleWeekStart = _visibleWeekStart.subtract(const Duration(days: 7));
+    _loadWeek(_visibleWeekStart);
     notifyListeners();
   }
 
@@ -54,7 +65,7 @@ class ScheduleProvider extends ChangeNotifier {
     );
     if (existing != null) {
       await _repository.delete(existing.id);
-      _loadMonth(_visibleMonth);
+      _loadWeek(_visibleWeekStart);
       notifyListeners();
     }
   }
@@ -82,7 +93,7 @@ class ScheduleProvider extends ChangeNotifier {
         ),
       );
     }
-    _loadMonth(_visibleMonth);
+    _loadWeek(_visibleWeekStart);
     notifyListeners();
   }
 }
