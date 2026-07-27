@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/employee_provider.dart';
 import '../../providers/schedule_provider.dart';
+import '../../services/pdf_service.dart';
 import 'widgets/month_calendar.dart';
 import 'widgets/shift_picker_dialog.dart';
 
@@ -19,6 +21,24 @@ class ScheduleScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Schedule'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+            tooltip: 'Export PDF',
+            onPressed: employees.isEmpty
+                ? null
+                : () async {
+                    final doc = await PdfService.buildMonthlySchedule(
+                      month: scheduleProvider.visibleMonth,
+                      employees: employees,
+                      shiftFor: scheduleProvider.shiftFor,
+                    );
+                    await Printing.layoutPdf(
+                      onLayout: (_) => doc.save(),
+                    );
+                  },
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Row(
