@@ -57,6 +57,7 @@ class EmployeeList extends StatelessWidget {
             child: Text(employee.name.isNotEmpty ? employee.name[0] : '?'),
           ),
           title: Text(employee.name),
+          subtitle: Text(employee.role.label),
           onTap: () => showEditEmployeeDialog(context, employee),
           trailing: IconButton(
             icon: const Icon(Icons.delete_outline),
