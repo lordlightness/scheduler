@@ -3,21 +3,33 @@ import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/constants/employee_role.dart';
 import '../../providers/employee_provider.dart';
 import '../../providers/schedule_provider.dart';
 import '../../services/pdf_service.dart';
 import '../../services/share_service.dart';
+import '../../widgets/department_filter.dart';
 import 'widgets/shift_legend.dart';
 import 'widgets/shift_picker_dialog.dart';
 import 'widgets/week_calendar.dart';
 
-class ScheduleScreen extends StatelessWidget {
+class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
+
+  @override
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
+}
+
+class _ScheduleScreenState extends State<ScheduleScreen> {
+  EmployeeRole? _filter;
 
   @override
   Widget build(BuildContext context) {
     final scheduleProvider = context.watch<ScheduleProvider>();
-    final employees = context.watch<EmployeeProvider>().employees;
+    final allEmployees = context.watch<EmployeeProvider>().employees;
+    final employees = _filter == null
+        ? allEmployees
+        : allEmployees.where((e) => e.role == _filter).toList();
     final weekDates = scheduleProvider.weekDates;
     final weekLabel =
         '${DateFormat.MMMd().format(weekDates.first)} - '
@@ -93,13 +105,17 @@ class ScheduleScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: employees.isEmpty
-          ? const Center(child: Text('Add employees first'))
-          : Column(
-              children: [
-                const ShiftLegend(),
-                Expanded(
-                  child: WeekCalendar(
+      body: Column(
+        children: [
+          DepartmentFilter(
+            selected: _filter,
+            onChanged: (role) => setState(() => _filter = role),
+          ),
+          const ShiftLegend(),
+          Expanded(
+            child: employees.isEmpty
+                ? const Center(child: Text('No employees in this department'))
+                : WeekCalendar(
                     weekDates: weekDates,
                     employees: employees,
                     shiftFor: scheduleProvider.shiftFor,
@@ -110,9 +126,9 @@ class ScheduleScreen extends StatelessWidget {
                       currentShift: scheduleProvider.shiftFor(employee.id, date),
                     ),
                   ),
-                ),
-              ],
-            ),
+          ),
+        ],
+      ),
     );
   }
 }
