@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../providers/employee_provider.dart';
 import '../../providers/schedule_provider.dart';
 import '../../services/pdf_service.dart';
+import '../../services/share_service.dart';
 import 'widgets/month_calendar.dart';
 import 'widgets/shift_picker_dialog.dart';
 
@@ -35,6 +36,23 @@ class ScheduleScreen extends StatelessWidget {
                     );
                     await Printing.layoutPdf(
                       onLayout: (_) => doc.save(),
+                    );
+                  },
+          ),
+          IconButton(
+            icon: const Icon(Icons.share_outlined),
+            tooltip: 'Share',
+            onPressed: employees.isEmpty
+                ? null
+                : () async {
+                    final doc = await PdfService.buildMonthlySchedule(
+                      month: scheduleProvider.visibleMonth,
+                      employees: employees,
+                      shiftFor: scheduleProvider.shiftFor,
+                    );
+                    await ShareService.sharePdf(
+                      doc,
+                      fileName: 'schedule_$monthLabel.pdf',
                     );
                   },
           ),
