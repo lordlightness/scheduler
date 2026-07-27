@@ -7,9 +7,11 @@ import 'data/repositories/schedule_repository.dart';
 import 'providers/auth_provider.dart';
 import 'providers/employee_provider.dart';
 import 'providers/schedule_provider.dart';
+import 'providers/settings_provider.dart';
 import 'screens/employees/employee_screen.dart';
 import 'screens/login/login_screen.dart';
 import 'screens/schedule/schedule_screen.dart';
+import 'screens/settings/settings_screen.dart';
 
 /// Root widget of Rivermouth Scheduler.
 class RivermouthApp extends StatelessWidget {
@@ -26,6 +28,7 @@ class RivermouthApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ScheduleProvider(ScheduleRepository()),
         ),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
       child: MaterialApp(
         title: 'Rivermouth Scheduler',
@@ -65,7 +68,11 @@ class _HomeShell extends StatefulWidget {
 class _HomeShellState extends State<_HomeShell> {
   int _index = 0;
 
-  static const _screens = [EmployeeScreen(), ScheduleScreen()];
+  static const _screens = [
+    EmployeeScreen(),
+    ScheduleScreen(),
+    SettingsScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +87,7 @@ class _HomeShellState extends State<_HomeShell> {
             icon: Icon(Icons.calendar_month),
             label: 'Schedule',
           ),
+          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );
