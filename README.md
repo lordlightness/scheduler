@@ -5,8 +5,8 @@ Offline-first employee scheduling app for Rivermouth Beach Bar, built with Flutt
 ## Features
 - Admin PIN login (PIN stored locally via Hive, changeable in Settings)
 - Employee management (add / edit / delete, duplicate-name protection)
-- Monthly schedule grid — tap a cell to assign Morning (M) / Middle (Md) / Afternoon (A) / Off
-- PDF export of the monthly schedule
+- Weekly schedule grid — tap a cell to assign Morning (M) / Middle (Md) / Afternoon (A) / Off
+- PDF export of the weekly schedule
 - Share the schedule PDF via WhatsApp or any installed share target
 - Fully offline — all data stored locally with Hive
 
