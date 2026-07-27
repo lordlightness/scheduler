@@ -3,10 +3,13 @@ import 'package:provider/provider.dart';
 
 import 'core/theme/app_theme.dart';
 import 'data/repositories/employee_repository.dart';
+import 'data/repositories/schedule_repository.dart';
 import 'providers/auth_provider.dart';
 import 'providers/employee_provider.dart';
+import 'providers/schedule_provider.dart';
 import 'screens/employees/employee_screen.dart';
 import 'screens/login/login_screen.dart';
+import 'screens/schedule/schedule_screen.dart';
 
 /// Root widget of Rivermouth Scheduler.
 class RivermouthApp extends StatelessWidget {
@@ -19,6 +22,9 @@ class RivermouthApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(
           create: (_) => EmployeeProvider(EmployeeRepository()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ScheduleProvider(ScheduleRepository()),
         ),
       ],
       child: MaterialApp(
@@ -43,6 +49,39 @@ class _AuthGate extends StatelessWidget {
     if (!isAuthenticated) {
       return const LoginScreen();
     }
-    return const EmployeeScreen();
+    return const _HomeShell();
+  }
+}
+
+/// Simple bottom-navigation shell switching between the Employees and
+/// Schedule screens.
+class _HomeShell extends StatefulWidget {
+  const _HomeShell();
+
+  @override
+  State<_HomeShell> createState() => _HomeShellState();
+}
+
+class _HomeShellState extends State<_HomeShell> {
+  int _index = 0;
+
+  static const _screens = [EmployeeScreen(), ScheduleScreen()];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(index: _index, children: _screens),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.people), label: 'Employees'),
+          NavigationDestination(
+            icon: Icon(Icons.calendar_month),
+            label: 'Schedule',
+          ),
+        ],
+      ),
+    );
   }
 }
