@@ -25,10 +25,12 @@ class EmployeeProvider extends ChangeNotifier {
   List<Employee> get employees => List.unmodifiable(_employees);
 
   void _load() {
-    if (_repository.getAll().isEmpty) {
+    var all = _repository.getAll();
+    if (all.isEmpty) {
       _seedInitialEmployees();
+      all = _repository.getAll();
     }
-    _employees = _repository.getAll();
+    _employees = all;
     notifyListeners();
   }
 

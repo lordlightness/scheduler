@@ -14,12 +14,19 @@ class ScheduleProvider extends ChangeNotifier {
 
   DateTime _visibleMonth = DateTime(DateTime.now().year, DateTime.now().month);
   List<ScheduleEntry> _entries = [];
+  Map<String, ScheduleEntry> _entriesByKey = {};
 
   DateTime get visibleMonth => _visibleMonth;
   List<ScheduleEntry> get entries => List.unmodifiable(_entries);
 
+  String _keyFor(String employeeId, DateTime date) =>
+      '${employeeId}_${date.year}-${date.month}-${date.day}';
+
   void _loadMonth(DateTime month) {
     _entries = _repository.getForMonth(month.year, month.month);
+    _entriesByKey = {
+      for (final entry in _entries) _keyFor(entry.employeeId, entry.date): entry,
+    };
   }
 
   void goToNextMonth() {
@@ -35,7 +42,7 @@ class ScheduleProvider extends ChangeNotifier {
   }
 
   ShiftType shiftFor(String employeeId, DateTime date) {
-    final entry = _repository.getForEmployeeAndDate(employeeId, date);
+    final entry = _entriesByKey[_keyFor(employeeId, date)];
     return entry?.shift ?? ShiftType.off;
   }
 

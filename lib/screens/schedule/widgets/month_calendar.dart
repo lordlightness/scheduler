@@ -72,13 +72,15 @@ class MonthCalendar extends StatelessWidget {
 
   Widget _buildCell(Employee employee, DateTime date) {
     final shift = shiftFor(employee.id, date);
-    return InkWell(
-      onTap: () => onCellTap(employee, date),
-      child: Container(
-        alignment: Alignment.center,
-        color: shift.color.withOpacity(0.5),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text(shift.label, style: const TextStyle(fontSize: 11)),
+    return RepaintBoundary(
+      child: InkWell(
+        onTap: () => onCellTap(employee, date),
+        child: Container(
+          alignment: Alignment.center,
+          color: shift.color.withOpacity(0.5),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Text(shift.label, style: const TextStyle(fontSize: 11)),
+        ),
       ),
     );
   }
