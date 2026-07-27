@@ -36,7 +36,16 @@ class EmployeeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (employees.isEmpty) {
-      return const Center(child: Text('No employees yet'));
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.people_outline, size: 48, color: Colors.grey.shade400),
+            const SizedBox(height: 12),
+            const Text('No employees yet'),
+          ],
+        ),
+      );
     }
     return ListView.builder(
       itemCount: employees.length,
@@ -44,6 +53,9 @@ class EmployeeList extends StatelessWidget {
         final employee = employees[index];
         return ListTile(
           key: ValueKey(employee.id),
+          leading: CircleAvatar(
+            child: Text(employee.name.isNotEmpty ? employee.name[0] : '?'),
+          ),
           title: Text(employee.name),
           onTap: () => showEditEmployeeDialog(context, employee),
           trailing: IconButton(
