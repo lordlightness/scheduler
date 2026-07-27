@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../data/models/employee.dart';
+import 'edit_employee_dialog.dart';
 
 class EmployeeList extends StatelessWidget {
   const EmployeeList({super.key, required this.employees});
@@ -19,6 +20,7 @@ class EmployeeList extends StatelessWidget {
         return ListTile(
           key: ValueKey(employee.id),
           title: Text(employee.name),
+          onTap: () => showEditEmployeeDialog(context, employee),
         );
       },
     );
