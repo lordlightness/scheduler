@@ -9,6 +9,7 @@ Future<void> showShiftPickerDialog(
   BuildContext context, {
   required Employee employee,
   required DateTime date,
+  required ShiftType currentShift,
 }) {
   return showDialog<void>(
     context: context,
@@ -36,6 +37,10 @@ Future<void> showShiftPickerDialog(
                   ),
                   const SizedBox(width: 12),
                   Text(shift.fullName),
+                  if (shift == currentShift) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
                 ],
               ),
             ),

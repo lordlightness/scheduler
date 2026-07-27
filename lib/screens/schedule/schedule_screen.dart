@@ -47,6 +47,7 @@ class ScheduleScreen extends StatelessWidget {
                 context,
                 employee: employee,
                 date: date,
+                currentShift: scheduleProvider.shiftFor(employee.id, date),
               ),
             ),
     );
