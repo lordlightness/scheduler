@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/employee_provider.dart';
 import 'widgets/add_employee_dialog.dart';
+import 'widgets/employee_list.dart';
 
 class EmployeeScreen extends StatelessWidget {
   const EmployeeScreen({super.key});
@@ -13,17 +14,7 @@ class EmployeeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Employees')),
-      body: employees.isEmpty
-          ? const Center(child: Text('No employees yet'))
-          : ListView.builder(
-              itemCount: employees.length,
-              itemBuilder: (context, index) {
-                final employee = employees[index];
-                return ListTile(
-                  title: Text(employee.name),
-                );
-              },
-            ),
+      body: EmployeeList(employees: employees),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showAddEmployeeDialog(context),
         child: const Icon(Icons.person_add),
