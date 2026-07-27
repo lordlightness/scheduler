@@ -20,19 +20,22 @@ class EmployeeAdapter extends TypeAdapter<Employee> {
       id: fields[0] as String,
       name: fields[1] as String,
       isActive: fields[2] as bool,
+      roleIndex: (fields[3] as int?) ?? 0,
     );
   }
 
   @override
   void write(BinaryWriter writer, Employee obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.isActive);
+      ..write(obj.isActive)
+      ..writeByte(3)
+      ..write(obj.roleIndex);
   }
 
   @override
