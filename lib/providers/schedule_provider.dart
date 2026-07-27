@@ -39,6 +39,19 @@ class ScheduleProvider extends ChangeNotifier {
     return entry?.shift ?? ShiftType.off;
   }
 
+  Future<void> clearShift(String employeeId, DateTime date) async {
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+    final existing = _repository.getForEmployeeAndDate(
+      employeeId,
+      normalizedDate,
+    );
+    if (existing != null) {
+      await _repository.delete(existing.id);
+      _loadMonth(_visibleMonth);
+      notifyListeners();
+    }
+  }
+
   Future<void> setShift(
     String employeeId,
     DateTime date,

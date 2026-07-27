@@ -44,6 +44,22 @@ Future<void> showShiftPickerDialog(
                 ],
               ),
             ),
+          const Divider(height: 1),
+          SimpleDialogOption(
+            onPressed: () {
+              dialogContext
+                  .read<ScheduleProvider>()
+                  .clearShift(employee.id, date);
+              Navigator.of(dialogContext).pop();
+            },
+            child: const Row(
+              children: [
+                Icon(Icons.close, size: 16),
+                SizedBox(width: 12),
+                Text('Clear'),
+              ],
+            ),
+          ),
         ],
       );
     },
