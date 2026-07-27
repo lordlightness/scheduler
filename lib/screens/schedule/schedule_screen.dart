@@ -30,14 +30,20 @@ class ScheduleScreen extends StatelessWidget {
             onPressed: employees.isEmpty
                 ? null
                 : () async {
-                    final doc = await PdfService.buildMonthlySchedule(
-                      month: scheduleProvider.visibleMonth,
-                      employees: employees,
-                      shiftFor: scheduleProvider.shiftFor,
-                    );
-                    await Printing.layoutPdf(
-                      onLayout: (_) => doc.save(),
-                    );
+                    try {
+                      final doc = await PdfService.buildMonthlySchedule(
+                        month: scheduleProvider.visibleMonth,
+                        employees: employees,
+                        shiftFor: scheduleProvider.shiftFor,
+                      );
+                      await Printing.layoutPdf(onLayout: (_) => doc.save());
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to export PDF: $e')),
+                        );
+                      }
+                    }
                   },
           ),
           IconButton(
@@ -46,15 +52,23 @@ class ScheduleScreen extends StatelessWidget {
             onPressed: employees.isEmpty
                 ? null
                 : () async {
-                    final doc = await PdfService.buildMonthlySchedule(
-                      month: scheduleProvider.visibleMonth,
-                      employees: employees,
-                      shiftFor: scheduleProvider.shiftFor,
-                    );
-                    await ShareService.sharePdf(
-                      doc,
-                      fileName: 'schedule_$monthLabel.pdf',
-                    );
+                    try {
+                      final doc = await PdfService.buildMonthlySchedule(
+                        month: scheduleProvider.visibleMonth,
+                        employees: employees,
+                        shiftFor: scheduleProvider.shiftFor,
+                      );
+                      await ShareService.sharePdf(
+                        doc,
+                        fileName: 'schedule_$monthLabel.pdf',
+                      );
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to share: $e')),
+                        );
+                      }
+                    }
                   },
           ),
         ],

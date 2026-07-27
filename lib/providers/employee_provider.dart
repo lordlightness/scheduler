@@ -38,7 +38,17 @@ class EmployeeProvider extends ChangeNotifier {
     }
   }
 
+  bool _nameTaken(String name, {String? excludingId}) {
+    final normalized = name.trim().toLowerCase();
+    return _employees.any(
+      (e) => e.id != excludingId && e.name.trim().toLowerCase() == normalized,
+    );
+  }
+
   Future<void> addEmployee(String name) async {
+    if (_nameTaken(name)) {
+      throw ArgumentError('An employee named "$name" already exists');
+    }
     final employee = Employee(id: generateId(), name: name);
     await _repository.add(employee);
     _employees = _repository.getAll();
@@ -46,6 +56,9 @@ class EmployeeProvider extends ChangeNotifier {
   }
 
   Future<void> updateEmployee(Employee employee, String newName) async {
+    if (_nameTaken(newName, excludingId: employee.id)) {
+      throw ArgumentError('An employee named "$newName" already exists');
+    }
     employee.name = newName;
     await _repository.update(employee);
     _employees = _repository.getAll();
