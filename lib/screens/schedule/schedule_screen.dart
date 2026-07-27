@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../providers/employee_provider.dart';
 import '../../providers/schedule_provider.dart';
 import 'widgets/month_calendar.dart';
+import 'widgets/shift_picker_dialog.dart';
 
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
@@ -42,7 +43,11 @@ class ScheduleScreen extends StatelessWidget {
               month: scheduleProvider.visibleMonth,
               employees: employees,
               shiftFor: scheduleProvider.shiftFor,
-              onCellTap: (employee, date) {},
+              onCellTap: (employee, date) => showShiftPickerDialog(
+                context,
+                employee: employee,
+                date: date,
+              ),
             ),
     );
   }
