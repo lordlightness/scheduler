@@ -2,20 +2,17 @@ import 'package:flutter/foundation.dart';
 
 /// Handles admin PIN authentication state.
 ///
-/// The PIN itself is sourced from [SettingsProvider] once Hive-backed
-/// settings storage is introduced in Phase 4. Until then, a sensible
-/// default is used so the login flow is testable end-to-end.
+/// The expected PIN is supplied by the caller (sourced from
+/// [SettingsProvider]) so this class stays independent of storage.
 class AuthProvider extends ChangeNotifier {
-  static const String _defaultPin = '1234';
-
   bool _isAuthenticated = false;
   String? _errorMessage;
 
   bool get isAuthenticated => _isAuthenticated;
   String? get errorMessage => _errorMessage;
 
-  bool login(String enteredPin) {
-    if (enteredPin == _defaultPin) {
+  bool login(String enteredPin, {required String expectedPin}) {
+    if (enteredPin == expectedPin) {
       _isAuthenticated = true;
       _errorMessage = null;
       notifyListeners();

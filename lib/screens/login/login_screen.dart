@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
+import '../../providers/settings_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,7 +23,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    context.read<AuthProvider>().login(_pinController.text);
+    final expectedPin = context.read<SettingsProvider>().pin;
+    context.read<AuthProvider>().login(
+          _pinController.text,
+          expectedPin: expectedPin,
+        );
   }
 
   @override

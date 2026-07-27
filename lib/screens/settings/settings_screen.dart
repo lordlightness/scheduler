@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/auth_provider.dart';
 import '../../providers/settings_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -86,6 +87,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 24),
               FilledButton(onPressed: _save, child: const Text('Save')),
+              const SizedBox(height: 32),
+              OutlinedButton.icon(
+                onPressed: () => context.read<AuthProvider>().logout(),
+                icon: const Icon(Icons.logout),
+                label: const Text('Log out'),
+              ),
             ],
           ),
         ),
