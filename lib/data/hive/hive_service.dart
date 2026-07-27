@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/employee.dart';
+import '../models/schedule_entry.dart';
 
 /// Centralizes Hive box names and startup initialization.
 class HiveService {
@@ -15,9 +16,10 @@ class HiveService {
   static Future<void> init() async {
     await Hive.initFlutter();
     Hive.registerAdapter(EmployeeAdapter());
+    Hive.registerAdapter(ScheduleEntryAdapter());
 
     await Hive.openBox<Employee>(employeeBoxName);
-    await Hive.openBox(scheduleBoxName);
+    await Hive.openBox<ScheduleEntry>(scheduleBoxName);
     await Hive.openBox(settingsBoxName);
   }
 }
