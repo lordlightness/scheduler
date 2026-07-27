@@ -8,10 +8,13 @@ class ScheduleRepository {
   Box<ScheduleEntry> get _box =>
       Hive.box<ScheduleEntry>(HiveService.scheduleBoxName);
 
-  /// Returns all entries whose date falls within [year]/[month].
-  List<ScheduleEntry> getForMonth(int year, int month) {
+  /// Returns all entries whose date falls within the 7-day window
+  /// starting at [weekStart] (inclusive) through [weekStart] + 6 days.
+  List<ScheduleEntry> getForWeek(DateTime weekStart) {
+    final start = DateTime(weekStart.year, weekStart.month, weekStart.day);
+    final end = start.add(const Duration(days: 6));
     return _box.values
-        .where((e) => e.date.year == year && e.date.month == month)
+        .where((e) => !e.date.isBefore(start) && !e.date.isAfter(end))
         .toList();
   }
 
