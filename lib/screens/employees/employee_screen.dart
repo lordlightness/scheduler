@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/employee_provider.dart';
+import 'widgets/add_employee_dialog.dart';
 
 class EmployeeScreen extends StatelessWidget {
   const EmployeeScreen({super.key});
@@ -24,7 +25,7 @@ class EmployeeScreen extends StatelessWidget {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => showAddEmployeeDialog(context),
         child: const Icon(Icons.person_add),
       ),
     );
