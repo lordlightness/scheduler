@@ -5,6 +5,7 @@ import 'core/theme/app_theme.dart';
 import 'data/repositories/employee_repository.dart';
 import 'providers/auth_provider.dart';
 import 'providers/employee_provider.dart';
+import 'screens/employees/employee_screen.dart';
 import 'screens/login/login_screen.dart';
 
 /// Root widget of Rivermouth Scheduler.
@@ -42,8 +43,6 @@ class _AuthGate extends StatelessWidget {
     if (!isAuthenticated) {
       return const LoginScreen();
     }
-    return const Scaffold(
-      body: Center(child: Text('Logged in')),
-    );
+    return const EmployeeScreen();
   }
 }
