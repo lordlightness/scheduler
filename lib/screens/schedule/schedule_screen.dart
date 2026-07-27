@@ -7,9 +7,9 @@ import '../../providers/employee_provider.dart';
 import '../../providers/schedule_provider.dart';
 import '../../services/pdf_service.dart';
 import '../../services/share_service.dart';
-import 'widgets/month_calendar.dart';
 import 'widgets/shift_legend.dart';
 import 'widgets/shift_picker_dialog.dart';
+import 'widgets/week_calendar.dart';
 
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
@@ -18,7 +18,10 @@ class ScheduleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheduleProvider = context.watch<ScheduleProvider>();
     final employees = context.watch<EmployeeProvider>().employees;
-    final monthLabel = DateFormat.yMMMM().format(scheduleProvider.visibleMonth);
+    final weekDates = scheduleProvider.weekDates;
+    final weekLabel =
+        '${DateFormat.MMMd().format(weekDates.first)} - '
+        '${DateFormat.MMMd().format(weekDates.last)}';
 
     return Scaffold(
       appBar: AppBar(
@@ -31,8 +34,8 @@ class ScheduleScreen extends StatelessWidget {
                 ? null
                 : () async {
                     try {
-                      final doc = await PdfService.buildMonthlySchedule(
-                        month: scheduleProvider.visibleMonth,
+                      final doc = await PdfService.buildWeeklySchedule(
+                        weekDates: weekDates,
                         employees: employees,
                         shiftFor: scheduleProvider.shiftFor,
                       );
@@ -53,14 +56,14 @@ class ScheduleScreen extends StatelessWidget {
                 ? null
                 : () async {
                     try {
-                      final doc = await PdfService.buildMonthlySchedule(
-                        month: scheduleProvider.visibleMonth,
+                      final doc = await PdfService.buildWeeklySchedule(
+                        weekDates: weekDates,
                         employees: employees,
                         shiftFor: scheduleProvider.shiftFor,
                       );
                       await ShareService.sharePdf(
                         doc,
-                        fileName: 'schedule_$monthLabel.pdf',
+                        fileName: 'schedule_$weekLabel.pdf',
                       );
                     } catch (e) {
                       if (context.mounted) {
@@ -79,12 +82,12 @@ class ScheduleScreen extends StatelessWidget {
             children: [
               IconButton(
                 icon: const Icon(Icons.chevron_left),
-                onPressed: scheduleProvider.goToPreviousMonth,
+                onPressed: scheduleProvider.goToPreviousWeek,
               ),
-              Text(monthLabel, style: Theme.of(context).textTheme.titleMedium),
+              Text(weekLabel, style: Theme.of(context).textTheme.titleMedium),
               IconButton(
                 icon: const Icon(Icons.chevron_right),
-                onPressed: scheduleProvider.goToNextMonth,
+                onPressed: scheduleProvider.goToNextWeek,
               ),
             ],
           ),
@@ -96,8 +99,8 @@ class ScheduleScreen extends StatelessWidget {
               children: [
                 const ShiftLegend(),
                 Expanded(
-                  child: MonthCalendar(
-                    month: scheduleProvider.visibleMonth,
+                  child: WeekCalendar(
+                    weekDates: weekDates,
                     employees: employees,
                     shiftFor: scheduleProvider.shiftFor,
                     onCellTap: (employee, date) => showShiftPickerDialog(
