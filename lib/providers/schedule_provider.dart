@@ -1,16 +1,23 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../core/constants/shift_type.dart';
 import '../core/utils/id_generator.dart';
 import '../data/models/schedule_entry.dart';
 import '../data/repositories/schedule_repository.dart';
+import '../services/sync_service.dart';
 
 class ScheduleProvider extends ChangeNotifier {
-  ScheduleProvider(this._repository) {
+  ScheduleProvider(this._repository, [SyncService? sync])
+      : _sync = sync ?? SyncService.instance {
     _loadWeek(_visibleWeekStart);
+    _listenForRemoteChanges();
   }
 
   final ScheduleRepository _repository;
+  final SyncService _sync;
+  StreamSubscription? _remoteSub;
 
   DateTime _visibleWeekStart = _startOfWeek(DateTime.now());
   List<ScheduleEntry> _entries = [];
@@ -40,6 +47,29 @@ class ScheduleProvider extends ChangeNotifier {
     };
   }
 
+  /// Applies changes made on other devices (via Firestore) to local Hive.
+  /// No-ops entirely if Firebase isn't configured.
+  void _listenForRemoteChanges() {
+    _remoteSub = _sync
+        .watchCollection(SyncService.scheduleEntriesCollection)
+        .listen((changes) {
+      var changed = false;
+      for (final change in changes) {
+        final data = change.doc.data();
+        if (change.type == DocumentChangeType.removed || data == null) {
+          _repository.delete(change.doc.id);
+        } else {
+          _repository.upsert(ScheduleEntry.fromMap(data));
+        }
+        changed = true;
+      }
+      if (changed) {
+        _loadWeek(_visibleWeekStart);
+        notifyListeners();
+      }
+    });
+  }
+
   void goToNextWeek() {
     _visibleWeekStart = _visibleWeekStart.add(const Duration(days: 7));
     _loadWeek(_visibleWeekStart);
@@ -67,6 +97,7 @@ class ScheduleProvider extends ChangeNotifier {
       await _repository.delete(existing.id);
       _loadWeek(_visibleWeekStart);
       notifyListeners();
+      _sync.deleteDocument(SyncService.scheduleEntriesCollection, existing.id);
     }
   }
 
@@ -80,20 +111,32 @@ class ScheduleProvider extends ChangeNotifier {
       employeeId,
       normalizedDate,
     );
+    final ScheduleEntry entry;
     if (existing != null) {
       existing.shift = shift;
       await _repository.upsert(existing);
+      entry = existing;
     } else {
-      await _repository.upsert(
-        ScheduleEntry(
-          id: generateId(),
-          employeeId: employeeId,
-          date: normalizedDate,
-          shiftIndex: shift.index,
-        ),
+      entry = ScheduleEntry(
+        id: generateId(),
+        employeeId: employeeId,
+        date: normalizedDate,
+        shiftIndex: shift.index,
       );
+      await _repository.upsert(entry);
     }
     _loadWeek(_visibleWeekStart);
     notifyListeners();
+    _sync.pushDocument(
+      SyncService.scheduleEntriesCollection,
+      entry.id,
+      entry.toMap(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _remoteSub?.cancel();
+    super.dispose();
   }
 }
