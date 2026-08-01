@@ -7,7 +7,7 @@ workflows:
       java: 17
     scripts:
       - name: Generate platform folders (android/ not committed to repo)
-        script: flutter create . --platforms=android
+        script: flutter create . --platforms=android --org com.krysharvex
       - name: Get dependencies
         script: flutter pub get
       - name: Build APK
