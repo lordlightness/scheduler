@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/employee_role.dart';
 import '../../providers/employee_provider.dart';
 import '../../widgets/department_filter.dart';
+import '../../widgets/pin_prompt_dialog.dart';
 import 'widgets/add_employee_dialog.dart';
 import 'widgets/employee_list.dart';
 
@@ -36,7 +37,11 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showAddEmployeeDialog(context),
+        onPressed: () async {
+          if (await requireAdminAuth(context)) {
+            if (context.mounted) showAddEmployeeDialog(context);
+          }
+        },
         child: const Icon(Icons.person_add),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/employee_role.dart';
 import '../../../data/models/employee.dart';
 import '../../../providers/employee_provider.dart';
+import '../../../widgets/pin_prompt_dialog.dart';
 import 'edit_employee_dialog.dart';
 
 class EmployeeList extends StatelessWidget {
@@ -11,7 +12,16 @@ class EmployeeList extends StatelessWidget {
 
   final List<Employee> employees;
 
+  Future<void> _handleEdit(BuildContext context, Employee employee) async {
+    if (await requireAdminAuth(context)) {
+      if (context.mounted) showEditEmployeeDialog(context, employee);
+    }
+  }
+
   Future<void> _confirmDelete(BuildContext context, Employee employee) async {
+    if (!await requireAdminAuth(context)) return;
+    if (!context.mounted) return;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -59,7 +69,7 @@ class EmployeeList extends StatelessWidget {
           ),
           title: Text(employee.name),
           subtitle: Text(employee.role.label),
-          onTap: () => showEditEmployeeDialog(context, employee),
+          onTap: () => _handleEdit(context, employee),
           trailing: IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () => _confirmDelete(context, employee),
