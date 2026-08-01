@@ -9,6 +9,7 @@ import '../../providers/schedule_provider.dart';
 import '../../services/pdf_service.dart';
 import '../../services/share_service.dart';
 import '../../widgets/department_filter.dart';
+import '../../widgets/pin_prompt_dialog.dart';
 import 'widgets/shift_legend.dart';
 import 'widgets/shift_picker_dialog.dart';
 import 'widgets/week_calendar.dart';
@@ -119,12 +120,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     weekDates: weekDates,
                     employees: employees,
                     shiftFor: scheduleProvider.shiftFor,
-                    onCellTap: (employee, date) => showShiftPickerDialog(
-                      context,
-                      employee: employee,
-                      date: date,
-                      currentShift: scheduleProvider.shiftFor(employee.id, date),
-                    ),
+                    onCellTap: (employee, date) async {
+                      if (!await requireAdminAuth(context)) return;
+                      if (!context.mounted) return;
+                      showShiftPickerDialog(
+                        context,
+                        employee: employee,
+                        date: date,
+                        currentShift: scheduleProvider.shiftFor(employee.id, date),
+                      );
+                    },
                   ),
           ),
         ],
