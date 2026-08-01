@@ -33,10 +33,11 @@ class DefaultFirebaseOptions {
   );
 
   static const android = FirebaseOptions(
-    apiKey: 'NOT_CONFIGURED',
-    appId: 'NOT_CONFIGURED',
-    messagingSenderId: 'NOT_CONFIGURED',
-    projectId: 'NOT_CONFIGURED',
+    apiKey: 'AIzaSyBTtP6G7gRJBk6zaZblII8Wa6ipEZSrS80',
+    appId: '1:639863042901:android:a230b3676cfed2cf0635dc',
+    messagingSenderId: '639863042901',
+    projectId: 'schedul-6e64a',
+    storageBucket: 'schedul-6e64a.firebasestorage.app',
   );
 
   static const ios = FirebaseOptions(
