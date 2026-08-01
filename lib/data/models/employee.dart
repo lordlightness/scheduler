@@ -27,4 +27,18 @@ class Employee extends HiveObject {
 
   EmployeeRole get role => EmployeeRole.values[roleIndex];
   set role(EmployeeRole value) => roleIndex = value.index;
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'name': name,
+        'isActive': isActive,
+        'roleIndex': roleIndex,
+      };
+
+  factory Employee.fromMap(Map<String, dynamic> map) => Employee(
+        id: map['id'] as String,
+        name: map['name'] as String,
+        isActive: map['isActive'] as bool? ?? true,
+        roleIndex: map['roleIndex'] as int? ?? 0,
+      );
 }

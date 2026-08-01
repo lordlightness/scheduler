@@ -28,4 +28,18 @@ class ScheduleEntry extends HiveObject {
 
   ShiftType get shift => ShiftType.values[shiftIndex];
   set shift(ShiftType value) => shiftIndex = value.index;
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'employeeId': employeeId,
+        'date': date.toIso8601String(),
+        'shiftIndex': shiftIndex,
+      };
+
+  factory ScheduleEntry.fromMap(Map<String, dynamic> map) => ScheduleEntry(
+        id: map['id'] as String,
+        employeeId: map['employeeId'] as String,
+        date: DateTime.parse(map['date'] as String),
+        shiftIndex: map['shiftIndex'] as int? ?? 0,
+      );
 }
